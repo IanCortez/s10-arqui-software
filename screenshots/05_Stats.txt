@@ -1,0 +1,27 @@
+
+=== Stats Generales ===
+  Total requests:        42000
+  P95 latency:           3956.07 ms
+  P99 latency:           5537.23 ms
+  Requests/minuto:       4.49
+  Throughput:            0.07 req/s
+  Error ratio:           8.1%
+  Top failing endpoint:  POKE_IMAGES /image/{name} (1249 fallas)
+
+  Latencia promedio por módulo:
+    POKE_STATS      63.09 ms
+    POKE_IMAGES     2958.77 ms
+    POKE_API        126.83 ms
+    SEARCH_API      2963.79 ms
+
+  Error rate por módulo:
+    POKE_STATS      5.2%
+    POKE_IMAGES     11.9%
+    POKE_API        7.6%
+    SEARCH_API      7.6%
+
+=== Análisis ===
+  ¿Cuál es el bottleneck?    POKE_IMAGES con 2958.77 ms promedio
+  ¿Dónde retry?              POKE_STATS, POKE_IMAGES, POKE_API, SEARCH_API
+  ¿Debe escalar?             Sí
+  Razonamiento:              p95=3956.07ms (umbral 2000ms), error_ratio=8.1% (umbral 15%). Retry sólo tiene sentido en módulos con errores transitorios (2-20%).

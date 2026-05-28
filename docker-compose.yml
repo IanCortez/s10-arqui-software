@@ -1,0 +1,54 @@
+services:
+  search-api:
+    build:
+      context: .
+      dockerfile: services/search_api/Dockerfile
+    container_name: search-api
+    ports:
+      - "8000:8000"
+    environment:
+      POKE_API_URL: http://poke-api:8001
+      POKE_STATS_URL: http://poke-stats:8002
+      POKE_IMAGES_URL: http://poke-images:8003
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - poke-api
+      - poke-stats
+      - poke-images
+
+  poke-api:
+    build:
+      context: .
+      dockerfile: services/poke_api/Dockerfile
+    container_name: poke-api
+    ports:
+      - "8001:8001"
+    environment:
+      ERROR_RATE: "0.08"
+    volumes:
+      - ./logs:/app/logs
+
+  poke-stats:
+    build:
+      context: .
+      dockerfile: services/poke_stats/Dockerfile
+    container_name: poke-stats
+    ports:
+      - "8002:8002"
+    environment:
+      ERROR_RATE: "0.05"
+    volumes:
+      - ./logs:/app/logs
+
+  poke-images:
+    build:
+      context: .
+      dockerfile: services/poke_images/Dockerfile
+    container_name: poke-images
+    ports:
+      - "8003:8003"
+    environment:
+      ERROR_RATE: "0.10"
+    volumes:
+      - ./logs:/app/logs

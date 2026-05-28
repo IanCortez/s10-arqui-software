@@ -1,0 +1,101 @@
+2026-05-21T08:00:41.979+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:00:41.980+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:00:42.034+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=54.30 | STATUS=200 | MSG=cache_hit name=psyduck
+2026-05-21T08:01:56.426+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:01:56.426+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:01:56.512+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=85.80 | STATUS=200 | MSG=cache_hit name=jigglypuff
+2026-05-21T08:02:00.053+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:02:00.053+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:02:00.104+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=50.39 | STATUS=200 | MSG=cache_hit name=jigglypuff
+2026-05-21T08:03:25.681+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:03:25.681+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:03:25.738+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=57.81 | STATUS=200 | MSG=cache_hit name=raichu
+2026-05-21T08:03:37.122+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:03:37.122+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:03:37.211+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=88.97 | STATUS=200 | MSG=cache_hit name=pikachu
+2026-05-21T08:03:45.545+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:03:45.545+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:03:45.685+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=140.55 | STATUS=200 | MSG=cache_hit name=squirtle
+2026-05-21T08:05:25.699+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:05:25.699+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:05:25.833+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=133.64 | STATUS=200 | MSG=cache_hit name=charizard
+2026-05-21T08:05:27.801+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:05:27.801+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:05:27.887+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=85.77 | STATUS=200 | MSG=cache_hit name=bulbasaur
+2026-05-21T08:05:40.167+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:05:40.167+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:05:40.232+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=65.40 | STATUS=200 | MSG=cache_hit name=mewtwo
+2026-05-21T08:06:02.969+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=ERROR | LATENCY_MS=560.44 | STATUS=500 | MSG=injected_failure name=psyduck
+2026-05-21T08:06:14.395+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:06:14.395+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:06:14.498+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=103.18 | STATUS=200 | MSG=cache_hit name=gyarados
+2026-05-21T08:06:55.206+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:06:55.206+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:06:55.355+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=149.52 | STATUS=200 | MSG=cache_hit name=magikarp
+2026-05-21T08:07:13.570+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:07:13.570+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:07:13.661+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=90.81 | STATUS=200 | MSG=cache_hit name=jigglypuff
+2026-05-21T08:07:22.616+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:07:22.616+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:07:22.715+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=99.03 | STATUS=200 | MSG=cache_hit name=bulbasaur
+2026-05-21T08:07:37.929+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=ERROR | LATENCY_MS=436.12 | STATUS=500 | MSG=injected_failure name=jigglypuff
+2026-05-21T08:07:57.258+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:07:57.258+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:07:57.371+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=113.00 | STATUS=200 | MSG=cache_hit name=pikachu
+2026-05-21T08:08:16.628+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:08:16.628+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:08:16.768+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=139.27 | STATUS=200 | MSG=cache_hit name=psyduck
+2026-05-21T08:08:20.088+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-21T08:08:20.088+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-21T08:08:20.167+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=79.87 | STATUS=200 | MSG=cache_hit name=mewtwo
+...
+2026-05-27T19:49:25.981+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:49:26.099+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=118.84 | STATUS=200 | MSG=cache_hit name=jigglypuff
+2026-05-27T19:51:07.425+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:51:07.425+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:51:07.535+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=109.21 | STATUS=200 | MSG=cache_hit name=psyduck
+2026-05-27T19:51:25.144+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:51:25.144+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:51:25.259+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=114.66 | STATUS=200 | MSG=cache_hit name=mewtwo
+2026-05-27T19:51:38.990+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:51:38.990+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:51:39.043+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=53.37 | STATUS=200 | MSG=cache_hit name=pikachu
+2026-05-27T19:52:09.770+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:52:09.770+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:52:09.920+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=149.78 | STATUS=200 | MSG=cache_hit name=squirtle
+2026-05-27T19:53:00.606+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:53:00.606+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:53:00.676+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=70.73 | STATUS=200 | MSG=cache_hit name=squirtle
+2026-05-27T19:53:39.354+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:53:39.354+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:53:39.407+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=52.80 | STATUS=200 | MSG=cache_hit name=gyarados
+2026-05-27T19:54:14.489+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:54:14.489+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:54:14.558+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=69.25 | STATUS=200 | MSG=cache_hit name=pikachu
+2026-05-27T19:56:04.121+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:56:04.121+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:56:04.253+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=132.10 | STATUS=200 | MSG=cache_hit name=psyduck
+2026-05-27T19:56:10.580+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:56:10.580+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:56:10.681+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=101.80 | STATUS=200 | MSG=cache_hit name=charizard
+2026-05-27T19:56:18.375+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:56:18.375+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:56:18.426+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=51.58 | STATUS=200 | MSG=cache_hit name=jigglypuff
+2026-05-27T19:57:27.689+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:57:27.689+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:57:27.783+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=94.05 | STATUS=200 | MSG=cache_hit name=pikachu
+2026-05-27T19:57:48.740+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:57:48.740+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:57:48.801+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=61.05 | STATUS=200 | MSG=cache_hit name=squirtle
+2026-05-27T19:58:28.872+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:58:28.872+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:58:28.967+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=94.46 | STATUS=200 | MSG=cache_hit name=pikachu
+2026-05-27T19:59:09.363+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:59:09.363+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:59:09.508+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=145.13 | STATUS=200 | MSG=cache_hit name=raichu
+2026-05-27T19:59:09.877+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:59:09.877+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:59:09.956+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=79.58 | STATUS=200 | MSG=cache_hit name=jigglypuff
+2026-05-27T19:59:27.976+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0 | STATUS=STARTED | MSG=block_start
+2026-05-27T19:59:27.976+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=cache_lookup | LEVEL=INFO | LATENCY_MS=0.10 | STATUS=HIT | MSG=block_end
+2026-05-27T19:59:28.030+00:00 | MODULE=POKE_API | API=/pokemon/{name} | FUNC=get_pokemon | LEVEL=INFO | LATENCY_MS=53.19 | STATUS=200 | MSG=cache_hit name=magikarp

@@ -1,0 +1,7 @@
+
+CheckAvailability PokeStats -Last5Days
+  23/05   95.1%
+  24/05   95.1%
+  25/05   94.5%
+  26/05   95.1%
+  27/05   94.1%
