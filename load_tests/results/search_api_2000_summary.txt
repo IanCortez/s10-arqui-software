@@ -1,0 +1,20 @@
+START Running Jmeter on Thu May 28 04:50:02 CEST 2026
+JVM_ARGS=-Xmn1612m -Xms6448m -Xmx6448m
+jmeter args=-n -t /tests/search_api_2000.jmx -l /tests/results/search_api_2000.jtl -j /tests/results/jmeter_2000.log -Jhost=search-api -Jport=8000 -Jthreads=20 -Jloops=100 -Jramp=10
+jmeter ALL ARGS=-Dlog4j2.formatMsgNoLookups=true -n -t /tests/search_api_2000.jmx -l /tests/results/search_api_2000.jtl -j /tests/results/jmeter_2000.log -Jhost=search-api -Jport=8000 -Jthreads=20 -Jloops=100 -Jramp=10
+Creating summariser <summary>
+Created the tree successfully using /tests/search_api_2000.jmx
+Starting standalone test @ May 28, 2026 4:50:04 AM CEST (1779936604269)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary +      1 in 00:00:00 =    2.5/s Avg:    94 Min:    94 Max:    94 Err:     0 (0.00%) Active: 1 Started: 1 Finished: 0
+summary +    412 in 00:00:25 =   16.5/s Avg:   943 Min:    39 Max:  2096 Err:    61 (14.81%) Active: 20 Started: 20 Finished: 0
+summary =    413 in 00:00:25 =   16.3/s Avg:   941 Min:    39 Max:  2096 Err:    61 (14.77%)
+summary +    611 in 00:00:30 =   20.3/s Avg:   990 Min:    67 Max:  2458 Err:    90 (14.73%) Active: 20 Started: 20 Finished: 0
+summary =   1024 in 00:00:55 =   18.5/s Avg:   970 Min:    39 Max:  2458 Err:   151 (14.75%)
+summary +    596 in 00:00:30 =   19.9/s Avg:  1016 Min:    35 Max:  1995 Err:    90 (15.10%) Active: 20 Started: 20 Finished: 0
+summary =   1620 in 00:01:25 =   19.0/s Avg:   987 Min:    35 Max:  2458 Err:   241 (14.88%)
+summary +    380 in 00:00:18 =   21.0/s Avg:   809 Min:    41 Max:  2382 Err:    42 (11.05%) Active: 0 Started: 20 Finished: 20
+summary =   2000 in 00:01:43 =   19.3/s Avg:   953 Min:    35 Max:  2458 Err:   283 (14.15%)
+Tidying up ...    @ May 28, 2026 4:51:48 AM CEST (1779936708144)
+... end of run
+END Running Jmeter on Thu May 28 04:51:48 CEST 2026

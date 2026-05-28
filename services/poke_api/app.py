@@ -11,7 +11,8 @@ import time
 import random
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+_here = Path(__file__).resolve()
+sys.path.insert(0, str(_here.parents[2] if len(_here.parents) > 2 else _here.parent))
 
 import httpx
 from fastapi import FastAPI, HTTPException

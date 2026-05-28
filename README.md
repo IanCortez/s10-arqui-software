@@ -88,6 +88,33 @@ La latencia se puede auditar de dos formas: por el campo `latency_ms` del evento
 final y por la diferencia entre los timestamps de `request_start` y
 `request_end`/`request_error` con el mismo `request_id`.
 
+## Política de fallos
+
+`/poke/search` trata `POKE_API` y `POKE_STATS` como dependencias obligatorias:
+si cualquiera falla, el Search API corta la ejecución y responde `500`. Esos
+`500` son fallos reales para JMeter, aunque provengan de la inyección controlada
+de errores usada para generar métricas.
+
+`POKE_IMAGES` es una dependencia opcional: si falla, el Search API mantiene la
+respuesta exitosa y devuelve `"image": null`. El evento queda registrado como
+`optional_dependency_failure`, pero no se cuenta como un request HTTP fallido.
+
+## Prueba Docker + JMeter
+
+La prueba automatizada levanta Docker, corre smoke tests, ejecuta JMeter y valida
+el número exacto de muestras. Por defecto genera 2.000 llamadas y se niega a
+correr menos de 2.000 o más de 10.000.
+
+```bash
+scripts/test_docker_jmeter.sh
+
+# Parámetros opcionales
+CALLS=4000 THREADS=20 scripts/test_docker_jmeter.sh
+```
+
+El plan JMeter espera HTTP `200`. Los `500` producidos por `POKE_API` o
+`POKE_STATS` aparecen como failures en el `.jtl` y en el resumen.
+
 ## Bot CLI
 
 ```bash

@@ -15,7 +15,8 @@ import asyncio
 from pathlib import Path
 
 # Permite import de `common` cuando se corre con uvicorn directo
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+_here = Path(__file__).resolve()
+sys.path.insert(0, str(_here.parents[2] if len(_here.parents) > 2 else _here.parent))
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query
@@ -61,13 +62,29 @@ async def search_pokemon(req: SearchRequest):
                 with log_block(logger, MODULE, api, "call_poke_stats", request_id, name) as ctx:
                     r = await client.get(f"{POKE_STATS_URL}/stats/{name}")
                     ctx["status"] = r.status_code
-                    return r.json() if r.status_code == 200 else {}
+                    r.raise_for_status()
+                    return r.json()
 
             async def call_poke_images():
-                with log_block(logger, MODULE, api, "call_poke_images", request_id, name) as ctx:
-                    r = await client.get(f"{POKE_IMAGES_URL}/image/{name}")
-                    ctx["status"] = r.status_code
-                    return r.json().get("url") if r.status_code == 200 else None
+                try:
+                    with log_block(logger, MODULE, api, "call_poke_images", request_id, name) as ctx:
+                        r = await client.get(f"{POKE_IMAGES_URL}/image/{name}")
+                        ctx["status"] = r.status_code
+                        return r.json().get("url") if r.status_code == 200 else None
+                except Exception as e:
+                    logger.warning(
+                        f"image_optional_failure name={name} err={e}",
+                        extra={
+                            "request_id": request_id,
+                            "action": "optional_dependency_failure",
+                            "microservice": MODULE,
+                            "api": api,
+                            "fn": "call_poke_images",
+                            "status": "DEGRADED",
+                            "query": name,
+                        },
+                    )
+                    return None
 
             base, stats, image = await asyncio.gather(
                 call_poke_api(), call_poke_stats(), call_poke_images()
