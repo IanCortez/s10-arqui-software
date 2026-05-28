@@ -5,8 +5,8 @@ set -e
 
 cd "$(dirname "$0")/.."
 export PYTHONPATH="$PWD"
-export LOG_DIR="$PWD/logs"
-mkdir -p "$LOG_DIR"
+export LOG_DB_PATH="$PWD/data/central_logs.db"
+mkdir -p "$(dirname "$LOG_DB_PATH")"
 
 # Seed de la DB
 python services/poke_stats/seed_db.py
@@ -23,6 +23,6 @@ uvicorn services.search_api.app:app  --port 8000 > /tmp/search_api.out  2>&1 &
 echo "  search-api  PID $!"
 
 echo ""
-echo "Servicios corriendo. Logs en $LOG_DIR"
+echo "Servicios corriendo. Logs DB en $LOG_DB_PATH"
 echo "Probar: curl -X POST http://localhost:8000/poke/search -H 'Content-Type: application/json' -d '{\"Pokemon_Name\":\"charizard\"}'"
 echo "Detener todo: pkill -f uvicorn"

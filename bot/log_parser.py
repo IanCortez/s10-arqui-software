@@ -1,15 +1,14 @@
 """
 Parser de logs de los microservicios.
 
-Lee los archivos en `logs/` con formato:
-    {ISO_TS} | MODULE=<m> | API=<a> | FUNC=<f> | LEVEL=<l> | LATENCY_MS=<ms> | STATUS=<s> | MSG=<m>
-
-Devuelve registros como diccionarios listos para agregaciones.
+Lee la base SQLite centralizada configurada por `LOG_DB_PATH` y devuelve
+registros como diccionarios listos para agregaciones.
 """
-import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Optional
+
+from common.log_store import query_logs
 
 LOG_DIR = Path("logs")
 
@@ -25,46 +24,29 @@ MODULE_ALIASES = {
     "images": "POKE_IMAGES",
 }
 
-LINE_RE = re.compile(
-    r"^(?P<ts>[^|]+?) \| MODULE=(?P<mod>[^|]+?) \| API=(?P<api>[^|]+?) \| "
-    r"FUNC=(?P<fn>[^|]+?) \| LEVEL=(?P<lvl>[^|]+?) \| LATENCY_MS=(?P<lat>[^|]+?) \| "
-    r"STATUS=(?P<st>[^|]+?) \| MSG=(?P<msg>.*)$"
-)
-
-
 def normalize_module(name: str) -> str:
     key = name.lower().replace("_", "").replace("-", "").strip()
     return MODULE_ALIASES.get(key, name.upper())
 
 
-def _parse_line(line: str) -> Optional[dict]:
-    m = LINE_RE.match(line.rstrip("\n"))
-    if not m:
-        return None
-    d = m.groupdict()
+def _parse_db_record(record: dict) -> Optional[dict]:
     try:
-        ts = datetime.fromisoformat(d["ts"].strip())
+        ts = datetime.fromisoformat(record["timestamp"])
     except ValueError:
         return None
-    try:
-        latency = float(d["lat"].strip())
-    except ValueError:
-        latency = None
-    status = d["st"].strip()
-    try:
-        status_int = int(status)
-    except ValueError:
-        status_int = None
     return {
         "ts": ts,
-        "module": d["mod"].strip(),
-        "api": d["api"].strip(),
-        "func": d["fn"].strip(),
-        "level": d["lvl"].strip(),
-        "latency_ms": latency,
-        "status": status,
-        "status_int": status_int,
-        "msg": d["msg"].strip(),
+        "request_id": record.get("request_id"),
+        "action": record.get("action"),
+        "module": record.get("microservice"),
+        "api": record.get("api"),
+        "func": record.get("function"),
+        "level": record.get("level"),
+        "latency_ms": record.get("latency_ms"),
+        "status": record.get("status"),
+        "status_int": record.get("status_code"),
+        "query": record.get("query"),
+        "msg": record.get("message"),
     }
 
 
@@ -73,29 +55,15 @@ def read_logs(module: Optional[str] = None,
               end: Optional[datetime] = None,
               log_dir: Path = LOG_DIR) -> list[dict]:
     """Lee y filtra logs. Si module es None, lee todos."""
-    if not log_dir.exists():
-        return []
-
-    files: Iterable[Path]
-    if module:
-        target = normalize_module(module).lower()
-        files = log_dir.glob(f"{target}.log")
-    else:
-        files = log_dir.glob("*.log")
-
-    records = []
-    for f in files:
-        with f.open(encoding="utf-8") as fh:
-            for line in fh:
-                rec = _parse_line(line)
-                if not rec:
-                    continue
-                if start and rec["ts"] < start:
-                    continue
-                if end and rec["ts"] > end:
-                    continue
-                records.append(rec)
-    return records
+    del log_dir
+    records = query_logs(
+        microservice=normalize_module(module) if module else None,
+        start=start.isoformat(timespec="milliseconds") if start else None,
+        end=end.isoformat(timespec="milliseconds") if end else None,
+        limit=100000,
+    )
+    parsed = [_parse_db_record(record) for record in records]
+    return [record for record in parsed if record is not None]
 
 
 def parse_date(s: str) -> datetime:
@@ -134,4 +102,9 @@ REQUEST_FUNCS = {
 def request_records(records: list[dict]) -> list[dict]:
     """Filtra solo los registros que representan un request HTTP completo
     (descarta block_start/block_end internos para no contar doble)."""
-    return [r for r in records if r["func"] in REQUEST_FUNCS and r["status_int"] is not None]
+    return [
+        r for r in records
+        if r["action"] in {"request_end", "request_error"}
+        and r["func"] in REQUEST_FUNCS
+        and r["status_int"] is not None
+    ]

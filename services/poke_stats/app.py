@@ -15,7 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from fastapi import FastAPI, HTTPException
-from common.logger import get_logger, log_block, log_request
+from common.logger import get_logger, log_block, log_request, log_request_start
 
 MODULE = "POKE_STATS"
 logger = get_logger(MODULE)
@@ -35,15 +35,16 @@ def get_stats(name: str):
     fn = "get_stats"
     start = time.perf_counter()
     name = name.lower().strip()
+    request_id = log_request_start(logger, MODULE, api, fn, query=name)
 
     if random.random() < ERROR_RATE:
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 500,
-                    f"injected_db_failure name={name}")
+                    f"injected_db_failure name={name}", request_id=request_id, query=name)
         raise HTTPException(status_code=500, detail="Simulated DB failure")
 
     try:
-        with log_block(logger, MODULE, api, "db_query") as ctx:
+        with log_block(logger, MODULE, api, "db_query", request_id, name) as ctx:
             conn = _get_conn()
             cur = conn.cursor()
             cur.execute(
@@ -58,7 +59,7 @@ def get_stats(name: str):
         if not row:
             elapsed = (time.perf_counter() - start) * 1000
             log_request(logger, MODULE, api, fn, elapsed, 404,
-                        f"not_found name={name}")
+                        f"not_found name={name}", request_id=request_id, query=name)
             raise HTTPException(status_code=404, detail="Not found")
 
         stats = {
@@ -73,7 +74,7 @@ def get_stats(name: str):
         }
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 200,
-                    f"stats_ok name={name}")
+                    f"stats_ok name={name}", request_id=request_id, query=name)
         return stats
 
     except HTTPException:
@@ -81,7 +82,7 @@ def get_stats(name: str):
     except Exception as e:
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 500,
-                    f"internal_error name={name} err={e}")
+                    f"internal_error name={name} err={e}", request_id=request_id, query=name)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 

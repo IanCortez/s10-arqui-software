@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from fastapi import FastAPI, HTTPException
-from common.logger import get_logger, log_block, log_request
+from common.logger import get_logger, log_block, log_request, log_request_start
 
 MODULE = "POKE_IMAGES"
 logger = get_logger(MODULE)
@@ -51,30 +51,31 @@ def get_image(name: str):
     fn = "get_image"
     start = time.perf_counter()
     name = name.lower().strip()
+    request_id = log_request_start(logger, MODULE, api, fn, query=name)
 
     if random.random() < ERROR_RATE:
         # Simulamos S3 lento + caída
         time.sleep(random.uniform(0.3, 0.8))
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 500,
-                    f"injected_s3_failure name={name}")
+                    f"injected_s3_failure name={name}", request_id=request_id, query=name)
         raise HTTPException(status_code=500, detail="Simulated S3 failure")
 
     try:
-        with log_block(logger, MODULE, api, "file_lookup") as ctx:
+        with log_block(logger, MODULE, api, "file_lookup", request_id, name) as ctx:
             poke_id = _NAME_TO_ID.get(name)
             ctx["status"] = "FOUND" if poke_id else "MISS"
 
         if not poke_id:
             elapsed = (time.perf_counter() - start) * 1000
             log_request(logger, MODULE, api, fn, elapsed, 404,
-                        f"image_not_found name={name}")
+                        f"image_not_found name={name}", request_id=request_id, query=name)
             raise HTTPException(status_code=404, detail="Image not found")
 
         url = f"{BASE_IMG_URL}/{poke_id}.png"
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 200,
-                    f"image_ok name={name}")
+                    f"image_ok name={name}", request_id=request_id, query=name)
         return {"name": name, "url": url}
 
     except HTTPException:
@@ -82,7 +83,7 @@ def get_image(name: str):
     except Exception as e:
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 500,
-                    f"internal_error name={name} err={e}")
+                    f"internal_error name={name} err={e}", request_id=request_id, query=name)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 

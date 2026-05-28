@@ -1,7 +1,7 @@
 # Bot - MonitorMach
 
 Arquitectura de microservicios para monitorear latencia y disponibilidad, con bot CLI
-que consume logs distribuidos para generar métricas.
+que consume una base centralizada de logs para generar métricas.
 
 ## Arquitectura
 
@@ -22,11 +22,16 @@ que consume logs distribuidos para generar métricas.
                                                    └────────────────┘
 ```
 
-Cada microservicio escribe logs en `logs/<servicio>.log` con el formato:
+Cada microservicio escribe eventos estructurados en una única base SQLite
+centralizada (`data/central_logs.db` en Docker/local). Cada request HTTP genera:
 
-```
-{ISO_TIMESTAMP} | MODULE=<name> | API=<endpoint> | FUNC=<function> | LEVEL=<level> | LATENCY_MS=<ms> | STATUS=<code> | MSG=<message>
-```
+- `request_start`: timestamp inicial, microservicio, endpoint, función y query.
+- `request_end` o `request_error`: timestamp final, status, `latency_ms` y mensaje.
+- `block_start`/`block_end`: mediciones internas para llamadas downstream, cache, DB, etc.
+
+Campos principales: `timestamp`, `request_id`, `action`, `microservice`, `api`,
+`function`, `level`, `status`, `status_code`, `latency_ms`, `query`, `message` y
+`metadata_json`.
 
 ## Cómo correr
 
@@ -60,7 +65,28 @@ locust -f load_tests/locustfile.py --headless -u 50 -r 5 -t 3m \
 ```
 
 Esto genera entre 1.000 y 10.000 llamadas a `/poke/search`, creando logs reales en
-los cuatro microservicios.
+la base centralizada.
+
+## Endpoints de logs
+
+El Search API expone consultas sobre la base centralizada:
+
+```bash
+# Últimos 100 eventos
+curl "http://localhost:8000/logs"
+
+# Filtrar por microservicio, acción, query o status
+curl "http://localhost:8000/logs?microservice=PokeImages&action=request_end&query=charizard"
+curl "http://localhost:8000/logs?status_code=500&limit=50"
+
+# Métricas de requests: avg/p95/p99 latency, latencia por timestamps, errores y error rate
+curl "http://localhost:8000/logs/stats"
+curl "http://localhost:8000/logs/stats?microservice=PokeApi"
+```
+
+La latencia se puede auditar de dos formas: por el campo `latency_ms` del evento
+final y por la diferencia entre los timestamps de `request_start` y
+`request_end`/`request_error` con el mismo `request_id`.
 
 ## Bot CLI
 
@@ -95,16 +121,16 @@ PYTHONPATH=. python -m bot.bot RenderGraph -Availability PokeImages -Last5Days
 ```
 
 El script `seed_historical_logs.py` simula 7 días de tráfico (~10.500 requests)
-para que las gráficas tengan suficiente data. **No reemplaza a Locust** — es solo
-una conveniencia para hacer demos rápidas; en producción los logs los generan los
-microservicios reales.
+en `data/central_logs.db` para que las gráficas tengan suficiente data. **No
+reemplaza a Locust** — es solo una conveniencia para hacer demos rápidas; en
+producción los logs los generan los microservicios reales.
 
 ## Resultados de ejecución
 
 Las carpetas incluyen evidencia real de las pruebas:
 
 - `screenshots/` — salidas (txt) de los 5 comandos del bot.
-- `logs_sample/` — primeras y últimas 50 líneas de cada `*.log`, mostrando el formato.
+- `logs_sample/` — muestras históricas del formato anterior de archivos de log.
 
 Ejemplo del comando `Stats` corrido contra los logs:
 
@@ -125,6 +151,7 @@ Ejemplo del comando `Stats` corrido contra los logs:
 ```
 monitor-mach/
 ├── common/logger.py             # Logger compartido + medición de bloques
+├── common/log_store.py          # SQLite centralizado + consultas/estadísticas
 ├── services/
 │   ├── search_api/              # Orquestador (puerto 8000)
 │   ├── poke_api/                # Proxy a pokeapi.co (puerto 8001)
@@ -133,7 +160,7 @@ monitor-mach/
 ├── bot/
 │   ├── bot.py                   # CLI entry point
 │   ├── commands.py              # CheckLatency, CheckAvailability, RenderGraph, Stats
-│   └── log_parser.py            # Parser del formato de logs
+│   └── log_parser.py            # Lector de la base centralizada
 ├── load_tests/locustfile.py     # Generador de carga 1k–10k requests
 ├── scripts/
 │   ├── run_local.sh             # Arranque local sin Docker

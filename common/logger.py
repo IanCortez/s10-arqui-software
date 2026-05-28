@@ -1,46 +1,84 @@
 """
 Logger compartido por todos los microservicios.
 
-Formato de log (una línea por evento):
-{ISO_TIMESTAMP} | MODULE=<mod> | API=<api> | FUNC=<fn> | LEVEL=<lvl> | LATENCY_MS=<ms> | STATUS=<code> | MSG=<msg>
-
-Provee:
-- get_logger(module_name): logger con archivo dedicado en LOG_DIR.
-- log_block(...): context manager para medir latencia de bloques de código
-  (cumple el requisito "tiempo de inicio y fin de cada bloque de código").
+Cada evento se escribe en una única base SQLite centralizada. Los requests HTTP
+generan eventos `request_start` y `request_end`/`request_error` con el mismo
+`request_id`, permitiendo calcular latencia por diferencia de timestamps y por
+el campo `latency_ms`.
 """
 import logging
-import os
 import time
-from datetime import datetime, timezone
-from pathlib import Path
 from contextlib import contextmanager
+from datetime import datetime, timezone
+from typing import Any
+from uuid import uuid4
 
-LOG_DIR = Path(os.getenv("LOG_DIR", "logs"))
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+from common.log_store import insert_log
 
 
 class StructuredFormatter(logging.Formatter):
-    """Pone todos los campos en una única línea parseable."""
+    """Formato compacto para stdout durante desarrollo local."""
 
     def format(self, record: logging.LogRecord) -> str:
         ts = datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(timespec="milliseconds")
-        module = getattr(record, "mod", record.name)
+        module = getattr(record, "microservice", getattr(record, "mod", record.name))
+        action = getattr(record, "action", record.getMessage())
         api = getattr(record, "api", "-")
         func = getattr(record, "fn", record.funcName)
         latency = getattr(record, "latency_ms", "-")
         status = getattr(record, "status", "-")
-        # Aseguramos que MSG no rompa el parser si contiene "|"
+        query = getattr(record, "query", "-")
         msg = record.getMessage().replace("|", "/")
         return (
-            f"{ts} | MODULE={module} | API={api} | FUNC={func} | "
-            f"LEVEL={record.levelname} | LATENCY_MS={latency} | "
-            f"STATUS={status} | MSG={msg}"
+            f"{ts} | ACTION={action} | MODULE={module} | API={api} | FUNC={func} | "
+            f"LEVEL={record.levelname} | STATUS={status} | LATENCY_MS={latency} | "
+            f"QUERY={query} | MSG={msg}"
         )
 
 
+class SQLiteLogHandler(logging.Handler):
+    """Handler que persiste eventos estructurados en la base centralizada."""
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            status = getattr(record, "status", None)
+            status_code = None
+            try:
+                status_code = int(status) if status is not None else None
+            except (TypeError, ValueError):
+                status_code = None
+
+            latency = getattr(record, "latency_ms", None)
+            try:
+                latency_ms = float(latency) if latency not in (None, "-") else None
+            except (TypeError, ValueError):
+                latency_ms = None
+
+            insert_log(
+                {
+                    "timestamp": datetime.fromtimestamp(
+                        record.created, tz=timezone.utc
+                    ).isoformat(timespec="milliseconds"),
+                    "request_id": getattr(record, "request_id", None),
+                    "action": getattr(record, "action", record.getMessage()),
+                    "microservice": getattr(record, "microservice", getattr(record, "mod", record.name)),
+                    "api": getattr(record, "api", None),
+                    "function": getattr(record, "fn", record.funcName),
+                    "level": record.levelname,
+                    "status": str(status) if status is not None else None,
+                    "status_code": status_code,
+                    "latency_ms": latency_ms,
+                    "query": getattr(record, "query", None),
+                    "message": record.getMessage(),
+                    "metadata": getattr(record, "metadata", None),
+                }
+            )
+        except Exception:
+            self.handleError(record)
+
+
 def get_logger(module_name: str) -> logging.Logger:
-    """Devuelve un logger con archivo propio por microservicio."""
+    """Devuelve un logger que escribe a SQLite y stdout."""
     logger = logging.getLogger(module_name)
     if logger.handlers:
         return logger
@@ -48,36 +86,65 @@ def get_logger(module_name: str) -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    fmt = StructuredFormatter()
+    logger.addHandler(SQLiteLogHandler())
 
-    # Archivo dedicado por microservicio
-    fh = logging.FileHandler(LOG_DIR / f"{module_name.lower()}.log", encoding="utf-8")
-    fh.setFormatter(fmt)
-    logger.addHandler(fh)
-
-    # También a stdout para debug local
     ch = logging.StreamHandler()
-    ch.setFormatter(fmt)
+    ch.setFormatter(StructuredFormatter())
     logger.addHandler(ch)
 
     return logger
 
 
-@contextmanager
-def log_block(logger: logging.Logger, module: str, api: str, func: str):
-    """
-    Context manager que mide tiempo de inicio y fin de un bloque de código.
+def log_request_start(
+    logger: logging.Logger,
+    module: str,
+    api: str,
+    func: str,
+    query: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> str:
+    """Registra el inicio de un request HTTP y devuelve su request_id."""
+    request_id = str(uuid4())
+    logger.info(
+        "request_start",
+        extra={
+            "request_id": request_id,
+            "action": "request_start",
+            "microservice": module,
+            "api": api,
+            "fn": func,
+            "status": "STARTED",
+            "query": query,
+            "metadata": metadata,
+        },
+    )
+    return request_id
 
-    Uso:
-        with log_block(logger, "SEARCH_API", "/poke/search", "call_poke_api") as ctx:
-            r = requests.get(...)
-            ctx["status"] = r.status_code
-    """
+
+@contextmanager
+def log_block(
+    logger: logging.Logger,
+    module: str,
+    api: str,
+    func: str,
+    request_id: str | None = None,
+    query: str | None = None,
+):
+    """Mide latencia de un bloque interno de código."""
     start = time.perf_counter()
     ctx = {"status": "-"}
     logger.info(
         "block_start",
-        extra={"mod": module, "api": api, "fn": func, "latency_ms": 0, "status": "STARTED"},
+        extra={
+            "request_id": request_id,
+            "action": "block_start",
+            "microservice": module,
+            "api": api,
+            "fn": func,
+            "latency_ms": 0,
+            "status": "STARTED",
+            "query": query,
+        },
     )
     try:
         yield ctx
@@ -85,11 +152,14 @@ def log_block(logger: logging.Logger, module: str, api: str, func: str):
         logger.info(
             "block_end",
             extra={
-                "mod": module,
+                "request_id": request_id,
+                "action": "block_end",
+                "microservice": module,
                 "api": api,
                 "fn": func,
                 "latency_ms": f"{elapsed:.2f}",
                 "status": ctx["status"],
+                "query": query,
             },
         )
     except Exception as e:
@@ -97,27 +167,45 @@ def log_block(logger: logging.Logger, module: str, api: str, func: str):
         logger.error(
             f"block_error: {e}",
             extra={
-                "mod": module,
+                "request_id": request_id,
+                "action": "block_error",
+                "microservice": module,
                 "api": api,
                 "fn": func,
                 "latency_ms": f"{elapsed:.2f}",
                 "status": "EXCEPTION",
+                "query": query,
             },
         )
         raise
 
 
-def log_request(logger: logging.Logger, module: str, api: str, func: str,
-                latency_ms: float, status: int, msg: str = "request_done"):
-    """Log de alto nivel para registrar el resultado final de un request HTTP."""
-    level = logger.info if 200 <= status < 400 else logger.error
+def log_request(
+    logger: logging.Logger,
+    module: str,
+    api: str,
+    func: str,
+    latency_ms: float,
+    status: int,
+    msg: str = "request_done",
+    request_id: str | None = None,
+    query: str | None = None,
+    metadata: dict[str, Any] | None = None,
+):
+    """Registra el resultado final de un request HTTP."""
+    is_error = status >= 400
+    level = logger.error if is_error else logger.info
     level(
         msg,
         extra={
-            "mod": module,
+            "request_id": request_id,
+            "action": "request_error" if is_error else "request_end",
+            "microservice": module,
             "api": api,
             "fn": func,
             "latency_ms": f"{latency_ms:.2f}",
             "status": status,
+            "query": query,
+            "metadata": metadata,
         },
     )

@@ -10,8 +10,9 @@ services:
       POKE_API_URL: http://poke-api:8001
       POKE_STATS_URL: http://poke-stats:8002
       POKE_IMAGES_URL: http://poke-images:8003
+      LOG_DB_PATH: /app/data/central_logs.db
     volumes:
-      - ./logs:/app/logs
+      - ./data:/app/data
     depends_on:
       - poke-api
       - poke-stats
@@ -26,8 +27,9 @@ services:
       - "8001:8001"
     environment:
       ERROR_RATE: "0.08"
+      LOG_DB_PATH: /app/data/central_logs.db
     volumes:
-      - ./logs:/app/logs
+      - ./data:/app/data
 
   poke-stats:
     build:
@@ -38,8 +40,9 @@ services:
       - "8002:8002"
     environment:
       ERROR_RATE: "0.05"
+      LOG_DB_PATH: /app/data/central_logs.db
     volumes:
-      - ./logs:/app/logs
+      - ./data:/app/data
 
   poke-images:
     build:
@@ -50,5 +53,6 @@ services:
       - "8003:8003"
     environment:
       ERROR_RATE: "0.10"
+      LOG_DB_PATH: /app/data/central_logs.db
     volumes:
-      - ./logs:/app/logs
+      - ./data:/app/data

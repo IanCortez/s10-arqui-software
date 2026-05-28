@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import httpx
 from fastapi import FastAPI, HTTPException
-from common.logger import get_logger, log_block, log_request
+from common.logger import get_logger, log_block, log_request, log_request_start
 
 MODULE = "POKE_API"
 logger = get_logger(MODULE)
@@ -32,6 +32,7 @@ async def get_pokemon(name: str):
     fn = "get_pokemon"
     start = time.perf_counter()
     name = name.lower().strip()
+    request_id = log_request_start(logger, MODULE, api, fn, query=name)
 
     # Inyección de error sintético para alimentar métricas
     if random.random() < ERROR_RATE:
@@ -39,21 +40,21 @@ async def get_pokemon(name: str):
         time.sleep(random.uniform(0.2, 0.6))
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 500,
-                    f"injected_failure name={name}")
+                    f"injected_failure name={name}", request_id=request_id, query=name)
         raise HTTPException(status_code=500, detail="Simulated upstream failure")
 
     try:
-        with log_block(logger, MODULE, api, "cache_lookup") as ctx:
+        with log_block(logger, MODULE, api, "cache_lookup", request_id, name) as ctx:
             cached = _cache.get(name)
             ctx["status"] = "HIT" if cached else "MISS"
 
         if cached:
             elapsed = (time.perf_counter() - start) * 1000
             log_request(logger, MODULE, api, fn, elapsed, 200,
-                        f"cache_hit name={name}")
+                        f"cache_hit name={name}", request_id=request_id, query=name)
             return cached
 
-        with log_block(logger, MODULE, api, "upstream_fetch") as ctx:
+        with log_block(logger, MODULE, api, "upstream_fetch", request_id, name) as ctx:
             async with httpx.AsyncClient(timeout=8.0) as client:
                 r = await client.get(f"{POKE_UPSTREAM}/{name}")
                 ctx["status"] = r.status_code
@@ -70,18 +71,18 @@ async def get_pokemon(name: str):
         _cache[name] = slim
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 200,
-                    f"fetched name={name}")
+                    f"fetched name={name}", request_id=request_id, query=name)
         return slim
 
     except httpx.HTTPStatusError:
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 500,
-                    f"not_found_upstream name={name}")
+                    f"not_found_upstream name={name}", request_id=request_id, query=name)
         raise HTTPException(status_code=500, detail="Upstream not found")
     except Exception as e:
         elapsed = (time.perf_counter() - start) * 1000
         log_request(logger, MODULE, api, fn, elapsed, 500,
-                    f"internal_error name={name} err={e}")
+                    f"internal_error name={name} err={e}", request_id=request_id, query=name)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
